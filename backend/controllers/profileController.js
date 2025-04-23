@@ -5,22 +5,45 @@ import CustomError from "../errors/error-index.js";
 // review later for updating for number of followers
 export const getMyProfile = async (req, res) => {
   const user = await User.findById(req.user.userId).select(
-    "-password -savedPosts -isAdmin -notifications -blocked -posts -__v -following -followers -followingRequests"
+    "-password -savedPosts -isAdmin -notifications -blocked -posts -__v"
   );
 
   res.status(StatusCodes.OK).json(user);
 };
-//all users can see basic profile info but only if you follow you can see posts that feature is handled in postsController
+
+////////////
 export const getUserProfile = async (req, res) => {
   const { id: userId } = req.params;
+
   if (!userId) {
     throw new CustomError.BadRequestError("userId needs to be provided");
   }
-  const user = await User.findOne({ _id: req.user.userId }).select(
-    "-password -savedPosts -isAdmin -notifications -blocked -posts -__v -following -followers -followingRequests"
+
+  const targetUser = await User.findById(userId).select(
+    "-password -savedPosts -isAdmin -notifications -blocked -posts -__v"
   );
 
-  res.status(StatusCodes.OK).json(user);
+  if (!targetUser) {
+    throw new CustomError.NotFoundError("User not found");
+  }
+
+  const currentUser = await User.findById(req.user.userId);
+
+  let followingStatus = "follow";
+
+  if (targetUser.followers.includes(currentUser._id)) {
+    followingStatus = "following";
+  } else if (targetUser.followingRequests.includes(currentUser._id)) {
+    followingStatus = "request sent";
+  }
+
+  const { followingRequests, followers, following, ...cleanUser } =
+    targetUser._doc;
+
+  res.status(StatusCodes.OK).json({
+    ...cleanUser,
+    following: followingStatus,
+  });
 };
 
 export const updateProfile = async (req, res) => {
@@ -66,31 +89,69 @@ export const changeProfilePrivacy = async (req, res) => {
 };
 
 export const deleteProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.userId);
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
+  try {
+    const user = await User.findById(req.user.userId).session(session);
     if (!user) {
       throw new CustomError.NotFoundError("User not found");
     }
 
-    await Post.deleteMany({ user: user._id });
+    // Get all posts by this user
+    const userPosts = await Post.find({ user: user._id }).session(session);
 
-    await User.updateMany(
-      { followers: user._id },
-      { $pull: { followers: user._id } }
-    );
-    await User.updateMany(
-      { following: user._id },
-      { $pull: { following: user._id } }
-    );
+    // Remove likes from all of the user's posts
+    await Promise.all([
+      // Remove likes from posts
+      Post.updateMany(
+        { _id: { $in: userPosts.map((p) => p._id) } },
+        { $set: { likes: [] } },
+        { session }
+      ),
 
-    await user.remove();
+      // Remove user's likes from other posts
+      Post.updateMany(
+        { likes: user._id },
+        { $pull: { likes: user._id } },
+        { session }
+      ),
 
+      // Remove from followers/following
+      User.updateMany(
+        { followers: user._id },
+        { $pull: { followers: user._id } },
+        { session }
+      ),
+      User.updateMany(
+        { following: user._id },
+        { $pull: { following: user._id } },
+        { session }
+      ),
+
+      // Remove from any followingRequests
+      User.updateMany(
+        { followingRequests: user._id },
+        { $pull: { followingRequests: user._id } },
+        { session }
+      ),
+    ]);
+
+    // Delete all user posts
+    await Post.deleteMany({ user: user._id }).session(session);
+
+    // Delete the user
+    await user.deleteOne({ session });
+
+    await session.commitTransaction();
     res.status(StatusCodes.OK).json({ msg: "Profile successfully deleted" });
   } catch (error) {
+    await session.abortTransaction();
     console.error(error);
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ msg: "Error deleting profile" });
+  } finally {
+    session.endSession();
   }
 };

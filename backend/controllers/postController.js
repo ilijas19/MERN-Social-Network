@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import CustomError from "../errors/error-index.js";
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import Comment from "../models/Comment.js";
 
 export const createPost = async (req, res) => {
   const { image, text, type } = req.body;
@@ -154,12 +155,17 @@ export const deletePost = async (req, res) => {
   if (!postId) {
     throw new CustomError.BadRequestError("postId needs to be provided");
   }
+
   const post = await Post.findOne({ _id: postId, user: req.user.userId });
 
   if (!post) {
     throw new CustomError.BadRequestError("Post Not Found");
   }
+
   await post.deleteOne();
+
+  await Comment.deleteMany({ post: postId });
+
   res.status(StatusCodes.OK).json({ msg: "Post Deleted" });
 };
 
@@ -239,12 +245,68 @@ export const getPostLikes = async (req, res) => {
 
 //BUILD LATER//
 export const getFollowingUserPosts = async (req, res) => {
-  // res.send("Get Following User Posts");
+  const { page = 1 } = req.query;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  const user = await User.findById(req.user.userId);
+  if (!user) {
+    throw new CustomError.UnauthenticatedError("Authentication Error");
+  }
+
+  const totalPosts = await Post.countDocuments({
+    user: { $in: user.following },
+  });
+
+  const posts = await Post.find({ user: { $in: user.following } })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .select("-__v");
+
+  const hasNextPage = skip + posts.length < totalPosts;
+  const nextPage = hasNextPage ? Number(page) + 1 : null;
+
+  res.status(StatusCodes.OK).json({
+    totalPosts,
+    currentPage: Number(page),
+    nextPage,
+    posts,
+  });
 };
+
 export const getExploreSectionPosts = async (req, res) => {
-  // res.send("Get Explore Seciton Posts");
+  const { page = 1 } = req.query;
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  const user = await User.findById(req.user.userId);
+  if (!user) {
+    throw new CustomError.UnauthenticatedError("Authentication Error");
+  }
+
+  const nonFollowedUserIds = await User.find({
+    _id: { $nin: [...user.following, req.user.userId] },
+    private: false,
+  }).select("_id");
+
+  const userIds = nonFollowedUserIds.map((u) => u._id);
+
+  const totalPosts = await Post.countDocuments({ user: { $in: userIds } });
+
+  const posts = await Post.find({ user: { $in: userIds } })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .select("-__v");
+
+  const hasNextPage = skip + posts.length < totalPosts;
+  const nextPage = hasNextPage ? Number(page) + 1 : null;
+
+  res.status(StatusCodes.OK).json({
+    totalPosts,
+    currentPage: Number(page),
+    nextPage,
+    posts,
+  });
 };
-export const getPostComments = async (req, res) => {
-  // res.send("Get Post Comments");
-};
-//BUILD LATER//

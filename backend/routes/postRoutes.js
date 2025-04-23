@@ -11,7 +11,6 @@ import {
   saveUnsavePost,
   likeUnlikePost,
   getSavedPosts,
-  getPostComments,
   getPostLikes,
   getUserPosts,
 } from "../controllers/postController.js";
@@ -29,7 +28,6 @@ router.get("/saved", getSavedPosts);
 router.post("/save", saveUnsavePost);
 router.post("/like", likeUnlikePost);
 
-router.get("/comments/:id", getPostComments);
 router.post("/likes/:id", getPostLikes);
 router.get("/posts/:id", getUserPosts);
 
