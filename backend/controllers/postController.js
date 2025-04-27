@@ -44,9 +44,10 @@ export const createPost = async (req, res) => {
   user.posts.push(post._id);
   await user.save();
 
-  res.status(StatusCodes.CREATED).json({ msg: "Post created", post });
+  res.status(StatusCodes.CREATED).json({ msg: "Post created" });
 };
 
+//here
 export const getMyPosts = async (req, res) => {
   const { type } = req.body;
   const { page = 1 } = req.query;
@@ -64,9 +65,24 @@ export const getMyPosts = async (req, res) => {
   const totalPosts = await Post.countDocuments(queryObject);
 
   const posts = await Post.find(queryObject)
+    .select("-comments -__v")
+    .populate({ path: "user", select: "username profilePicture" })
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: -1 });
+
+  const currentUser = await User.findOne({ _id: req.user.userId });
+
+  const enrichedPosts = posts.map((post) => {
+    const isLiked = post.likes.includes(currentUser._id);
+    const isSaved = currentUser.savedPosts.includes(post._id);
+
+    return {
+      ...post.toObject(),
+      isLiked,
+      isSaved,
+    };
+  });
 
   const hasNextPage = skip + posts.length < totalPosts;
   const nextPage = hasNextPage ? Number(page) + 1 : null;
@@ -75,11 +91,11 @@ export const getMyPosts = async (req, res) => {
     totalPosts,
     currentPage: Number(page),
     nextPage,
-    posts,
+    posts: enrichedPosts,
   });
 };
 
-/// CHECK AFTER IMPLEMENTING FOLLOWING FUNCTIONALITY
+//here
 export const getUserPosts = async (req, res) => {
   const { id: userId } = req.params;
   const { page = 1 } = req.query;
@@ -107,10 +123,23 @@ export const getUserPosts = async (req, res) => {
   }
 
   const posts = await Post.find({ user: userId })
-    .select("-likes -comments -__v")
+    .select("-comments -__v")
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);
+
+  const currentUser = await User.findOne({ _id: req.user.userId });
+
+  const enrichedPosts = posts.map((post) => {
+    const isLiked = post.likes.includes(currentUser._id);
+    const isSaved = currentUser.savedPosts.includes(post._id);
+
+    return {
+      ...post.toObject(),
+      isLiked,
+      isSaved,
+    };
+  });
 
   const totalPosts = await Post.countDocuments({ user: userId });
   const totalPages = Math.ceil(totalPosts / limit);
@@ -119,20 +148,32 @@ export const getUserPosts = async (req, res) => {
     currentPage: Number(page),
     nextPage: +page >= totalPages ? null : +page + 1,
     totalPosts,
-    posts,
+    posts: enrichedPosts,
   });
 };
 
+//here
 export const getSinglePost = async (req, res) => {
   const { id: postId } = req.params;
   if (!postId) {
     throw new CustomError.BadRequestError("postId needs to be provided");
   }
-  const post = await Post.findById(postId);
+  const post = await Post.findById(postId)
+    .select("-comments")
+    .populate({ path: "user", select: "username profilePicture" });
   if (!post) {
     throw new CustomError.BadRequestError("Post Not Found");
   }
-  res.status(StatusCodes.OK).json(post);
+  const currentUser = await User.findOne({ _id: req.user.userId });
+  const isLiked = post.likes.includes(currentUser._id);
+  const isSaved = currentUser.savedPosts.includes(post._id);
+
+  const modifiedPost = {
+    ...post.toObject(),
+    isLiked,
+    isSaved,
+  };
+  res.status(StatusCodes.OK).json(modifiedPost);
 };
 
 export const editPost = async (req, res) => {
@@ -191,17 +232,35 @@ export const saveUnsavePost = async (req, res) => {
     return res.status(StatusCodes.OK).json({ msg: "Added To Favorites" });
   }
 };
-
+//here
 export const getSavedPosts = async (req, res) => {
   const user = await User.findOne({ _id: req.user.userId }).populate({
     path: "savedPosts",
+    select: "-comments ",
+    populate: {
+      path: "user",
+      select: "username profilePicture",
+    },
   });
+  const currentUser = await User.findOne({ _id: req.user.userId });
+
+  const enrichedPosts = user.savedPosts.map((post) => {
+    const isLiked = post.likes.includes(currentUser._id);
+    const isSaved = currentUser.savedPosts.includes(post._id);
+
+    return {
+      ...post.toObject(),
+      isLiked,
+      isSaved,
+    };
+  });
+
   if (!user) {
     throw new CustomError.UnauthenticatedError("Authentication Error");
   }
   res
     .status(StatusCodes.OK)
-    .json({ nbHits: user.savedPosts.length, savedPosts: user.savedPosts });
+    .json({ nbHits: user.savedPosts.length, savedPosts: enrichedPosts });
 };
 
 export const likeUnlikePost = async (req, res) => {
@@ -227,7 +286,7 @@ export const likeUnlikePost = async (req, res) => {
 };
 
 export const getPostLikes = async (req, res) => {
-  const { postId } = req.body;
+  const { id: postId } = req.params;
   if (!postId) {
     throw new CustomError.BadRequestError("Post Id Needs To Be Provided");
   }
@@ -243,7 +302,7 @@ export const getPostLikes = async (req, res) => {
     .json({ nbHits: post.likes.length, likes: post.likes });
 };
 
-//BUILD LATER//
+//here
 export const getFollowingUserPosts = async (req, res) => {
   const { page = 1 } = req.query;
   const limit = 10;
@@ -259,10 +318,24 @@ export const getFollowingUserPosts = async (req, res) => {
   });
 
   const posts = await Post.find({ user: { $in: user.following } })
+    .populate({ path: "user", select: "username profilePicture" })
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
     .select("-__v");
+
+  const currentUser = await User.findOne({ _id: req.user.userId });
+
+  const enrichedPosts = posts.map((post) => {
+    const isLiked = post.likes.includes(currentUser._id);
+    const isSaved = currentUser.savedPosts.includes(post._id);
+
+    return {
+      ...post.toObject(),
+      isLiked,
+      isSaved,
+    };
+  });
 
   const hasNextPage = skip + posts.length < totalPosts;
   const nextPage = hasNextPage ? Number(page) + 1 : null;
@@ -271,34 +344,56 @@ export const getFollowingUserPosts = async (req, res) => {
     totalPosts,
     currentPage: Number(page),
     nextPage,
-    posts,
+    posts: enrichedPosts,
   });
 };
-
+//here
 export const getExploreSectionPosts = async (req, res) => {
   const { page = 1 } = req.query;
   const limit = 10;
   const skip = (page - 1) * limit;
 
-  const user = await User.findById(req.user.userId);
-  if (!user) {
+  const currentUser = await User.findById(req.user.userId);
+  if (!currentUser) {
     throw new CustomError.UnauthenticatedError("Authentication Error");
   }
 
-  const nonFollowedUserIds = await User.find({
-    _id: { $nin: [...user.following, req.user.userId] },
+  // Get all public users except current user
+  const publicUsers = await User.find({
+    _id: { $ne: req.user.userId },
     private: false,
   }).select("_id");
 
-  const userIds = nonFollowedUserIds.map((u) => u._id);
+  // Include followed users (even if private)
+  const followedUserIds = currentUser.following;
+
+  // Merge and deduplicate user IDs
+  const userIds = [
+    ...new Set([
+      ...publicUsers.map((u) => u._id.toString()),
+      ...followedUserIds.map((id) => id.toString()),
+    ]),
+  ];
 
   const totalPosts = await Post.countDocuments({ user: { $in: userIds } });
 
   const posts = await Post.find({ user: { $in: userIds } })
+    .populate({ path: "user", select: "username profilePicture" })
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
     .select("-__v");
+
+  const enrichedPosts = posts.map((post) => {
+    const isLiked = post.likes.includes(currentUser._id);
+    const isSaved = currentUser.savedPosts.includes(post._id);
+
+    return {
+      ...post.toObject(),
+      isLiked,
+      isSaved,
+    };
+  });
 
   const hasNextPage = skip + posts.length < totalPosts;
   const nextPage = hasNextPage ? Number(page) + 1 : null;
@@ -307,6 +402,6 @@ export const getExploreSectionPosts = async (req, res) => {
     totalPosts,
     currentPage: Number(page),
     nextPage,
-    posts,
+    posts: enrichedPosts,
   });
 };

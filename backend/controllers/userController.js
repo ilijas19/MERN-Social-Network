@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import CustomError from "../errors/error-index.js";
 import { StatusCodes } from "http-status-codes";
+import getCurrentUserFollowingStatus from "../utils/getUserFollowingStatus.js";
 
 export const followUnfollow = async (req, res) => {
   const { userId } = req.body;
@@ -155,22 +156,39 @@ export const removeFollower = async (req, res) => {
 };
 
 export const getFollowersList = async (req, res) => {
-  const { userId } = req.query;
-  if (!userId) {
-    throw new CustomError.BadRequestError("userId needs to be provided");
+  const { username } = req.query;
+  if (!username) {
+    throw new CustomError.BadRequestError("Username needs to be provided");
   }
-  const user = await User.findOne({ _id: userId }).populate({
+
+  const user = await User.findOne({ username }).populate({
     path: "followers",
-    select: "_id username profilePicture",
+    select: "_id username profilePicture private followingRequests",
   });
+
   if (!user) {
     throw new CustomError.NotFoundError("User Not Found");
   }
-  // for yourself
+
+  const currentUser = await User.findOne({ _id: req.user.userId });
+
+  // Enrich followers with currentUserFollowing status
+  const enrichedFollowers = user.followers.map((follower) => ({
+    _id: follower._id,
+    username: follower.username,
+    currentUserFollowing: getCurrentUserFollowingStatus(follower, currentUser),
+    profilePicture: follower.profilePicture,
+  }));
+
+  // For yourself
   if (user._id.toString() === req.user.userId.toString()) {
-    return res.status(StatusCodes.OK).json({ followers: user.followers });
+    return res.status(StatusCodes.OK).json({
+      nbHits: user.followers.length,
+      followers: enrichedFollowers,
+    });
   }
-  //check if user is private
+
+  // Check if the user is private
   if (user.private) {
     const isFollowing = user.followers.some(
       (follower) => follower._id.toString() === req.user.userId.toString()
@@ -179,26 +197,50 @@ export const getFollowersList = async (req, res) => {
       throw new CustomError.BadRequestError("Not Following");
     }
   }
-  return res.status(StatusCodes.OK).json({ followers: user.followers });
+
+  return res.status(StatusCodes.OK).json({
+    nbHits: user.followers.length,
+    followers: enrichedFollowers,
+  });
 };
 
 export const getFollowingList = async (req, res) => {
-  const { userId } = req.query;
-  if (!userId) {
-    throw new CustomError.BadRequestError("userId needs to be provided");
+  const { username } = req.query;
+  if (!username) {
+    throw new CustomError.BadRequestError("Username needs to be provided");
   }
-  const user = await User.findOne({ _id: userId }).populate({
+
+  const user = await User.findOne({ username }).populate({
     path: "following",
-    select: "_id username profilePicture",
+    select: "_id username profilePicture private followingRequests",
   });
+
   if (!user) {
     throw new CustomError.NotFoundError("User Not Found");
   }
-  //for yourself
+
+  const currentUser = await User.findOne({ _id: req.user.userId });
+
+  // Enrich following with currentUserFollowing status
+  const enrichedFollowing = user.following.map((followingUser) => ({
+    _id: followingUser._id,
+    username: followingUser.username,
+    currentUserFollowing: getCurrentUserFollowingStatus(
+      followingUser,
+      currentUser
+    ),
+    profilePicture: followingUser.profilePicture,
+  }));
+
+  // For yourself
   if (user._id.toString() === req.user.userId.toString()) {
-    return res.status(StatusCodes.OK).json({ following: user.following });
+    return res.status(StatusCodes.OK).json({
+      nbHits: user.following.length,
+      following: enrichedFollowing,
+    });
   }
-  //check if user is private
+
+  // Check if the user is private
   if (user.private) {
     const isFollowing = user.followers.some(
       (follower) => follower._id.toString() === req.user.userId.toString()
@@ -207,7 +249,11 @@ export const getFollowingList = async (req, res) => {
       throw new CustomError.BadRequestError("Not Following");
     }
   }
-  return res.status(StatusCodes.OK).json({ following: user.following });
+
+  return res.status(StatusCodes.OK).json({
+    nbHits: user.following.length,
+    following: enrichedFollowing,
+  });
 };
 
 export const searchForUser = async (req, res) => {

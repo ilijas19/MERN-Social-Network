@@ -1,5 +1,5 @@
 const notFound = (req, res) => {
-  res.send("Resource Not Found");
+  res.status(404).json({ msg: "Resource Not Found" });
 };
 
 export default notFound;

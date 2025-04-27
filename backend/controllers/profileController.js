@@ -5,7 +5,7 @@ import CustomError from "../errors/error-index.js";
 // review later for updating for number of followers
 export const getMyProfile = async (req, res) => {
   const user = await User.findById(req.user.userId).select(
-    "-password -savedPosts -isAdmin -notifications -blocked -posts -__v"
+    "-password -savedPosts -isAdmin -notifications -blocked -posts -__v -following -followers -followingRequests"
   );
 
   res.status(StatusCodes.OK).json(user);

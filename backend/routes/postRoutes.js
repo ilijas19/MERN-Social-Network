@@ -28,7 +28,7 @@ router.get("/saved", getSavedPosts);
 router.post("/save", saveUnsavePost);
 router.post("/like", likeUnlikePost);
 
-router.post("/likes/:id", getPostLikes);
+router.get("/likes/:id", getPostLikes);
 router.get("/posts/:id", getUserPosts);
 
 router.route("/:id").get(getSinglePost).patch(editPost).delete(deletePost);
