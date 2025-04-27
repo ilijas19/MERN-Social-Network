@@ -9,7 +9,7 @@ import {
 import { isApiError } from "../../utils/isApiError";
 import { toast } from "react-toastify";
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type PostProps = {
   post: Post;
@@ -19,6 +19,7 @@ type PostProps = {
 
 const PostElement = ({ post, setDeletingPostId, setModalOpen }: PostProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [numLikes, setNumLikes] = useState(post.numLikes);
@@ -58,21 +59,29 @@ const PostElement = ({ post, setDeletingPostId, setModalOpen }: PostProps) => {
       }
     }
   };
-
+  const openUser = (username: string) => {
+    navigate(`/profile/${username}`);
+  };
   return (
     <figure className="text-white p-4 pb-2 shadow-md  max-w-[600px] w-full mx-auto ">
       {/* userinfo */}
       <div className="flex items-center gap-3">
         <img
+          onClick={() => openUser(post.user.username)}
           src={
             post.user.profilePicture === ""
               ? "https://res.cloudinary.com/dnn2nis25/image/upload/v1743597100/gym-system/ya0hva63onpxyzyexfpn.jpg"
               : post.user.profilePicture
           }
-          className="h-12 w-12  rounded-full object-cover"
+          className="h-12 w-12  rounded-full object-cover cursor-pointer"
         ></img>
         <div className="flex flex-col  justify-center">
-          <p className="font-semibold">{post.user.username}</p>
+          <p
+            onClick={() => openUser(post.user.username)}
+            className="font-semibold cursor-pointer"
+          >
+            {post.user.username}
+          </p>
           <p className="text-gray-400 text-sm">
             {formatTimeAgo(post.createdAt.toString())}
           </p>

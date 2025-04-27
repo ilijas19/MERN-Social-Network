@@ -144,3 +144,11 @@ export type GetFollowersRes = {
   nbHits: number;
   followers: UserInfo[];
 };
+
+export type FolUnfArgs = {
+  userId: string;
+};
+
+export type GetFollowRequestsRes = {
+  followingRequests: Omit<UserInfo, "currentUserFollowing">;
+};

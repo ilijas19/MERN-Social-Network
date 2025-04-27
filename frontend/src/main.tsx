@@ -17,6 +17,7 @@ import Home from "./pages/layout/Home.tsx";
 import Bookmarks from "./pages/user/Bookmarks.tsx";
 import Profile from "./pages/user/Profile.tsx";
 import FollowList from "./pages/user/FollowList.tsx";
+import UserProfile from "./pages/user/UserProfile.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,6 +30,7 @@ const router = createBrowserRouter(
         <Route path="bookmarks" element={<Bookmarks />} />
         <Route path="myProfile" element={<Profile />} />
         <Route path="followList/:user/:list" element={<FollowList />} />
+        <Route path="profile/:username" element={<UserProfile />} />
       </Route>
 
       <Route path="*" element={<div className="text-red-500">Error</div>} />
