@@ -6,7 +6,7 @@ import Loader from "../Loader";
 import { Navigate, Outlet } from "react-router-dom";
 
 const PrivateRoute = () => {
-  const { data: currentUser, isLoading } = useGetCurrentUserQuery();
+  const { data: currentUser, isLoading, refetch } = useGetCurrentUserQuery();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -15,9 +15,9 @@ const PrivateRoute = () => {
     }
   }, [currentUser]);
 
-  // useEffect(() => {
-  //   refetch();
-  // }, []);
+  useEffect(() => {
+    refetch();
+  }, []);
 
   if (isLoading) {
     return <Loader />;

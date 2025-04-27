@@ -14,6 +14,9 @@ import Login from "./pages/auth/Login.tsx";
 import Register from "./pages/auth/Register.tsx";
 import PrivateRoute from "./components/routes/PrivateRoute.tsx";
 import Home from "./pages/layout/Home.tsx";
+import Bookmarks from "./pages/user/Bookmarks.tsx";
+import Profile from "./pages/user/Profile.tsx";
+import FollowList from "./pages/user/FollowList.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,7 +26,12 @@ const router = createBrowserRouter(
 
       <Route path="/" element={<PrivateRoute />}>
         <Route index element={<Home />} />
+        <Route path="bookmarks" element={<Bookmarks />} />
+        <Route path="myProfile" element={<Profile />} />
+        <Route path="followList/:user/:list" element={<FollowList />} />
       </Route>
+
+      <Route path="*" element={<div className="text-red-500">Error</div>} />
     </Route>
   )
 );

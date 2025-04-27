@@ -7,15 +7,20 @@ import {
   BookmarkIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
+import { CurrentUser } from "../../types";
 
-const Navigation = () => {
+type NavProps = {
+  currentUser: CurrentUser | null;
+};
+
+const Navigation = ({ currentUser }: NavProps) => {
   const navItems = [
     { icon: HomeIcon, label: "Home", path: "/" },
     { icon: MagnifyingGlassIcon, label: "Search", path: "/search" },
     { icon: BellIcon, label: "Notifications", path: "/notifications" },
     { icon: EnvelopeIcon, label: "Messages", path: "/messages" },
     { icon: BookmarkIcon, label: "Bookmarks", path: "/bookmarks" },
-    { icon: UserIcon, label: "Profile", path: "/profile" },
+    { icon: UserIcon, label: "Profile", path: "/myProfile" },
   ];
 
   return (
@@ -37,7 +42,7 @@ const Navigation = () => {
       </ul>
       <div className="mt-auto not-sm:hidden mb-4 ml-5 flex gap-2 items-center">
         <div className="h-8 w-8 bg-white rounded-full"></div>
-        <p className="text-white">Username</p>
+        <p className="text-white">{currentUser?.username}</p>
       </div>
     </aside>
   );

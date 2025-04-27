@@ -14,6 +14,7 @@
   "type": "module",
   "description": "",
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",
     "concurrently": "^9.1.2",

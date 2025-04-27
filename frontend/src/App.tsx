@@ -8,9 +8,9 @@ const App = () => {
   const { currentUser } = useSelector((state: RootState) => state.auth);
 
   return (
-    <div className="min-h-screen flex max-w-[1050px] mx-auto">
+    <div className="min-h-screen flex max-w-[1000px] mx-auto">
       <ToastContainer />
-      {currentUser && <Navigation />}
+      {currentUser && <Navigation currentUser={currentUser} />}
       <main
         className={`${
           currentUser ? "sm:ml-56 ml-0 w-full" : "w-full"
