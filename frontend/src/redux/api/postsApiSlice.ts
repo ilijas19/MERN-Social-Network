@@ -97,4 +97,5 @@ export const {
   useGetPostLikesQuery,
   useGetFollowingUserPostsQuery,
   useGetExploreSectionPostsQuery,
+  useGetUserPostsQuery,
 } = postsApiSlice;

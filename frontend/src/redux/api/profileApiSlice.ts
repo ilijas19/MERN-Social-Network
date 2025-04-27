@@ -17,8 +17,8 @@ export const profileApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     getUserProfile: builder.query<UserProfile, string>({
-      query: (id) => ({
-        url: `${PROFILE_URL}/${id}`,
+      query: (username) => ({
+        url: `${PROFILE_URL}/${username}`,
       }),
     }),
     deleteProfile: builder.mutation<MessageRes, void>({
