@@ -13,13 +13,13 @@ export const getMyProfile = async (req, res) => {
 
 ////////////
 export const getUserProfile = async (req, res) => {
-  const { id: userId } = req.params;
+  const { username } = req.params;
 
-  if (!userId) {
-    throw new CustomError.BadRequestError("userId needs to be provided");
+  if (!username) {
+    throw new CustomError.BadRequestError("username needs to be provided");
   }
 
-  const targetUser = await User.findById(userId).select(
+  const targetUser = await User.findOne({ username }).select(
     "-password -savedPosts -isAdmin -notifications -blocked -posts -__v"
   );
 
@@ -82,6 +82,7 @@ export const changeProfilePrivacy = async (req, res) => {
   const user = await User.findOne({ _id: req.user.userId });
 
   user.private = privacy;
+  user.followingRequests = [];
   await user.save();
   res
     .status(StatusCodes.OK)

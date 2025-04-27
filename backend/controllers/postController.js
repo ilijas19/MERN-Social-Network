@@ -123,6 +123,7 @@ export const getUserPosts = async (req, res) => {
   }
 
   const posts = await Post.find({ user: userId })
+    .populate({ path: "user", select: "profilePicture username" })
     .select("-comments -__v")
     .sort({ createdAt: -1 })
     .skip(skip)

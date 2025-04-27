@@ -17,6 +17,6 @@ router.route("/").get(getMyProfile).patch(updateProfile).delete(deleteProfile);
 router.route("/updatePrivacy").patch(changeProfilePrivacy);
 router.route("/updatePassword").patch(updatePassword);
 
-router.route("/:id").get(getUserProfile);
+router.route("/:username").get(getUserProfile);
 
 export default router;
