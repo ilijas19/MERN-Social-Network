@@ -27,7 +27,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
     }),
     getSinglePost: builder.query<Post, string>({
       query: (id) => ({
-        url: `${POST_URL}/${id}`,
+        url: `${POST_URL}/singlePost/${id}`,
       }),
     }),
     editPost: builder.mutation<MessageRes, { id: string; text: string }>({

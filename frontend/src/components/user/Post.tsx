@@ -9,15 +9,21 @@ import {
 import { isApiError } from "../../utils/isApiError";
 import { toast } from "react-toastify";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 type PostProps = {
   post: Post;
   setDeletingPostId?: (str: string) => void;
   setModalOpen?: (bol: boolean) => void;
+  singlePost?: boolean;
 };
 
-const PostElement = ({ post, setDeletingPostId, setModalOpen }: PostProps) => {
+const PostElement = ({
+  post,
+  setDeletingPostId,
+  setModalOpen,
+  singlePost,
+}: PostProps) => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -63,7 +69,7 @@ const PostElement = ({ post, setDeletingPostId, setModalOpen }: PostProps) => {
     navigate(`/profile/${username}`);
   };
   return (
-    <figure className="text-white p-4 pb-2 shadow-md  max-w-[600px] w-full mx-auto ">
+    <figure className="text-white p-4 pb-2 shadow-md   px-9 w-full mx-auto ">
       {/* userinfo */}
       <div className="flex items-center gap-3">
         <img
@@ -120,13 +126,21 @@ const PostElement = ({ post, setDeletingPostId, setModalOpen }: PostProps) => {
           />
           <p className="text-sm text-gray-300">{numLikes}</p>
         </li>
-        <li className="flex items-center gap-1">
-          <FaRegComment
-            size={18}
-            className={`hover:fill-orange-600 cursor-pointer `}
-          />
-          <p className="text-sm text-gray-300">{post.numComments}</p>
-        </li>
+        {singlePost ?? (
+          <Link
+            onClick={() => {
+              sessionStorage.setItem("allowedToView", "true");
+            }}
+            to={`/post/${post._id}`}
+            className="flex items-center gap-1"
+          >
+            <FaRegComment
+              size={18}
+              className={`hover:fill-orange-600 cursor-pointer `}
+            />
+            <p className="text-sm text-gray-300">{post.numComments}</p>
+          </Link>
+        )}
         <li className="flex items-center gap-1 ml-auto">
           <FaRegBookmark
             onClick={handleSave}

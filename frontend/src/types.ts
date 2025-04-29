@@ -152,3 +152,53 @@ export type FolUnfArgs = {
 export type GetFollowRequestsRes = {
   followingRequests: Omit<UserInfo, "currentUserFollowing">;
 };
+// COMMENTS
+export type Reply = {
+  _id: string;
+  user: Omit<UserInfo, "currentUserFollowing">;
+  comment: string;
+  text: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type Comment = {
+  _id: string;
+  user: Omit<UserInfo, "currentUserFollowing">;
+  post: string;
+  text: string;
+  replies: Reply[];
+  createdAt: Date;
+  updatedAt: Date;
+  myPost: boolean;
+  myComment: boolean;
+};
+
+export type CreateCommentArgs = {
+  text: string;
+  postId: string;
+};
+
+export type EditCommentType = {
+  postId: string;
+  text: string;
+};
+
+export type GetPostCommentsRes = {
+  nbHits: 2;
+  comments: Comment[];
+};
+
+export type CreateReplyRes = {
+  msg: string;
+  reply: Reply;
+};
+export type CreateReplyArgs = {
+  text: string;
+  commentId: string;
+};
+
+export type DeleteReplyArgs = {
+  commentId: string;
+  replyId: string;
+};

@@ -6,3 +6,4 @@ export const POST_URL = "/api/v1/post";
 export const PROFILE_URL = "/api/v1/profile";
 export const UPLOAD_URL = "/api/v1/upload";
 export const USERS_URL = "/api/v1/user";
+export const COMMENT_URL = "/api/v1/comment";
