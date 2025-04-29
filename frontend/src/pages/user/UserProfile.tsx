@@ -162,6 +162,11 @@ const UserProfile = () => {
       </figure>
 
       {/* POSTS */}
+      {posts?.posts.length === 0 && (
+        <h2 className="text-center text-gray-300 font-semibold mt-16">
+          No Posts To Show
+        </h2>
+      )}
       {error && isApiError(error) ? (
         <div className="flex flex-col items-center gap-4">
           <h2 className=" text-gray-300 text-lg">{error.data.msg}</h2>

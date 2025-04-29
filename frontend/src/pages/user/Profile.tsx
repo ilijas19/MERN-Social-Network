@@ -21,6 +21,7 @@ import { BsThreeDots } from "react-icons/bs";
 import ChangePrivacyForm from "../../components/forms/ChangePrivacyForm";
 import ChangePasswordForm from "../../components/forms/ChangePasswordForm";
 import DeletePostForm from "../../components/forms/DeletePostForm";
+import CreatePostForm from "../../components/user/CreatePostForm";
 
 const Profile = () => {
   const [showingPosts, setShowingPosts] = useState<Post[] | []>([]);
@@ -188,6 +189,15 @@ const Profile = () => {
         </div>
       </figure>
       {/* POST CONTAINER */}
+      <div className="-mt-5">
+        <CreatePostForm />
+      </div>
+      {posts?.posts.length === 0 && (
+        <h2 className="text-center text-gray-300 font-semibold mt-16">
+          No Posts To Show
+        </h2>
+      )}
+
       <ul className="flex flex-col gap-4">
         {profile && postsLoading && <Loader />}
         {showingPosts.map((post) => (
@@ -199,6 +209,7 @@ const Profile = () => {
           />
         ))}
       </ul>
+
       <div className="flex justify-center my-6">
         <button
           hidden={posts?.nextPage === null}
