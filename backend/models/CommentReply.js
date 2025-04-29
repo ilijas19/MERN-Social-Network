@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
 
-const commentSchema = new mongoose.Schema(
+const commentReplySchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    post: {
+    comment: {
       type: mongoose.Types.ObjectId,
-      ref: "Post",
+      ref: "Comment",
       required: true,
     },
     text: {
@@ -17,14 +17,8 @@ const commentSchema = new mongoose.Schema(
       maxLength: 60,
       required: true,
     },
-    replies: [
-      {
-        type: mongoose.Types.ObjectId,
-        ref: "CommentReply",
-      },
-    ],
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Comment", commentSchema);
+export default mongoose.model("CommentReply", commentReplySchema);

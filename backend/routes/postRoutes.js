@@ -31,6 +31,10 @@ router.post("/like", likeUnlikePost);
 router.get("/likes/:id", getPostLikes);
 router.get("/posts/:id", getUserPosts);
 
-router.route("/:id").get(getSinglePost).patch(editPost).delete(deletePost);
+router
+  .route("/singlePost/:id")
+  .get(getSinglePost)
+  .patch(editPost)
+  .delete(deletePost);
 
 export default router;
