@@ -202,3 +202,15 @@ export type DeleteReplyArgs = {
   commentId: string;
   replyId: string;
 };
+
+export type SearchForUserArg = {
+  username: string;
+  page: number;
+};
+
+export type SearchForUserRes = {
+  page: number;
+  nextPage: number | null;
+  totalResults: number;
+  users: UserInfo[];
+};

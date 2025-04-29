@@ -6,6 +6,8 @@ import {
   GetFollowingRes,
   GetFollowRequestsRes,
   MessageRes,
+  SearchForUserArg,
+  SearchForUserRes,
 } from "../../types";
 
 export const usersApiSlice = apiSlice.injectEndpoints({
@@ -54,7 +56,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     //todo: type this query
-    searchForUser: builder.query({
+    searchForUser: builder.query<SearchForUserRes, SearchForUserArg>({
       query: ({ username, page = 1 }) => ({
         url: `${USERS_URL}/search?username=${username}&page=${page}`,
       }),

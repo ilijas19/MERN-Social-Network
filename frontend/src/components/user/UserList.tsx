@@ -24,13 +24,6 @@ const UserList = ({ showingUsers }: ListProps) => {
             className="size-12 rounded-full object-cover"
           />
           <p className="font-semibold">{user.username}</p>
-          <button className="ml-auto  border px-3 py-1 rounded-xl bg-white text-black font-semibold cursor-pointer">
-            {user.currentUserFollowing.slice(0, 1).toUpperCase() +
-              user.currentUserFollowing.slice(
-                1,
-                user.currentUserFollowing.length
-              )}
-          </button>
         </Link>
       ))}
     </ul>

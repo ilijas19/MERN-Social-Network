@@ -19,6 +19,7 @@ import Profile from "./pages/user/Profile.tsx";
 import FollowList from "./pages/user/FollowList.tsx";
 import UserProfile from "./pages/user/UserProfile.tsx";
 import PostPage from "./pages/user/PostPage.tsx";
+import Search from "./pages/layout/Search.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -33,6 +34,7 @@ const router = createBrowserRouter(
         <Route path="followList/:user/:list" element={<FollowList />} />
         <Route path="profile/:username" element={<UserProfile />} />
         <Route path="post/:id" element={<PostPage />} />
+        <Route path="search" element={<Search />} />
       </Route>
 
       <Route path="*" element={<div className="text-red-500">Error</div>} />
