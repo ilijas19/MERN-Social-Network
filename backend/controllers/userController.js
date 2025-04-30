@@ -266,26 +266,36 @@ export const searchForUser = async (req, res) => {
   }
 
   // Get users and total count in parallel
-  const [users, totalCount] = await Promise.all([
+  const [users, totalCount, currentUser] = await Promise.all([
     User.find({
       username: { $regex: username.trim(), $options: "i" },
     })
-      .select("_id username profilePicture")
+      .select(
+        "_id username profilePicture followers following followingRequests"
+      )
       .skip(skip)
       .limit(limit),
 
     User.countDocuments({
       username: { $regex: username.trim(), $options: "i" },
     }),
+    User.findOne({ _id: req.user.userId }),
   ]);
+
+  const enrichedUsers = users.map((user) => ({
+    _id: user._id,
+    username: user.username,
+    profilePicture: user.profilePicture,
+    currentUserFollowing: getCurrentUserFollowingStatus(user, currentUser),
+  }));
 
   const hasNextPage = totalCount > skip + limit;
   const nextPage = hasNextPage ? Number(page) + 1 : null;
 
   res.status(StatusCodes.OK).json({
-    users,
     page: Number(page),
     nextPage,
     totalResults: totalCount,
+    users: enrichedUsers,
   });
 };

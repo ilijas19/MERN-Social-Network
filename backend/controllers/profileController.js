@@ -1,6 +1,8 @@
 import User from "../models/User.js";
 import { StatusCodes } from "http-status-codes";
 import CustomError from "../errors/error-index.js";
+import mongoose from "mongoose";
+import Post from "../models/Post.js";
 
 // review later for updating for number of followers
 export const getMyProfile = async (req, res) => {
@@ -90,69 +92,69 @@ export const changeProfilePrivacy = async (req, res) => {
 };
 
 export const deleteProfile = async (req, res) => {
+  const { password } = req.body;
+  if (!password) {
+    throw new CustomError.BadRequestError("Password Must be provided");
+  }
   const session = await mongoose.startSession();
   session.startTransaction();
 
-  try {
-    const user = await User.findById(req.user.userId).session(session);
-    if (!user) {
-      throw new CustomError.NotFoundError("User not found");
-    }
-
-    // Get all posts by this user
-    const userPosts = await Post.find({ user: user._id }).session(session);
-
-    // Remove likes from all of the user's posts
-    await Promise.all([
-      // Remove likes from posts
-      Post.updateMany(
-        { _id: { $in: userPosts.map((p) => p._id) } },
-        { $set: { likes: [] } },
-        { session }
-      ),
-
-      // Remove user's likes from other posts
-      Post.updateMany(
-        { likes: user._id },
-        { $pull: { likes: user._id } },
-        { session }
-      ),
-
-      // Remove from followers/following
-      User.updateMany(
-        { followers: user._id },
-        { $pull: { followers: user._id } },
-        { session }
-      ),
-      User.updateMany(
-        { following: user._id },
-        { $pull: { following: user._id } },
-        { session }
-      ),
-
-      // Remove from any followingRequests
-      User.updateMany(
-        { followingRequests: user._id },
-        { $pull: { followingRequests: user._id } },
-        { session }
-      ),
-    ]);
-
-    // Delete all user posts
-    await Post.deleteMany({ user: user._id }).session(session);
-
-    // Delete the user
-    await user.deleteOne({ session });
-
-    await session.commitTransaction();
-    res.status(StatusCodes.OK).json({ msg: "Profile successfully deleted" });
-  } catch (error) {
-    await session.abortTransaction();
-    console.error(error);
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ msg: "Error deleting profile" });
-  } finally {
-    session.endSession();
+  const user = await User.findById(req.user.userId).session(session);
+  if (!user) {
+    throw new CustomError.NotFoundError("User not found");
   }
+  const isPasswordCorrect = await user.comparePassword(password);
+  if (!isPasswordCorrect) {
+    throw new CustomError.BadRequestError("Wrong Password");
+  }
+
+  // Get all posts by this user
+  const userPosts = await Post.find({ user: user._id }).session(session);
+
+  // Remove likes from all of the user's posts
+  await Promise.all([
+    // Remove likes from posts
+    Post.updateMany(
+      { _id: { $in: userPosts.map((p) => p._id) } },
+      { $set: { likes: [] } },
+      { session }
+    ),
+
+    // Remove user's likes from other posts
+    Post.updateMany(
+      { likes: user._id },
+      { $pull: { likes: user._id } },
+      { session }
+    ),
+
+    // Remove from followers/following
+    User.updateMany(
+      { followers: user._id },
+      { $pull: { followers: user._id } },
+      { session }
+    ),
+    User.updateMany(
+      { following: user._id },
+      { $pull: { following: user._id } },
+      { session }
+    ),
+
+    // Remove from any followingRequests
+    User.updateMany(
+      { followingRequests: user._id },
+      { $pull: { followingRequests: user._id } },
+      { session }
+    ),
+  ]);
+
+  // Delete all user posts
+  await Post.deleteMany({ user: user._id }).session(session);
+
+  // Delete the user
+  await user.deleteOne({ session });
+
+  await session.commitTransaction();
+  res.status(StatusCodes.OK).json({ msg: "Profile successfully deleted" });
+
+  session.endSession();
 };

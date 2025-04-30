@@ -16,7 +16,7 @@ const router = express.Router();
 
 router.use(authenticateUser);
 
-router.post("/search", searchForUser);
+router.get("/search", searchForUser);
 router.post("/followUnfollow", followUnfollow);
 router.get("/requests", getFollowRequests);
 router.post("/accept", acceptFollowRequest);
