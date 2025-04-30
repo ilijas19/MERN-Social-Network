@@ -22,6 +22,7 @@ import ChangePrivacyForm from "../../components/forms/ChangePrivacyForm";
 import ChangePasswordForm from "../../components/forms/ChangePasswordForm";
 import DeletePostForm from "../../components/forms/DeletePostForm";
 import CreatePostForm from "../../components/user/CreatePostForm";
+import DeleteProfileForm from "../../components/forms/DeleteProfileForm";
 
 const Profile = () => {
   const [showingPosts, setShowingPosts] = useState<Post[] | []>([]);
@@ -32,6 +33,7 @@ const Profile = () => {
   const [isPrivacyModalOpen, setPrivacyModalOpen] = useState<boolean>(false);
   const [isPasswordModalOpen, setPasswordModalOpen] = useState<boolean>(false);
   const [isDeletePostModalOpen, setDeletePostModalOpen] = useState(false);
+  const [isDeleteProfileModalOpen, setDeleteProfileModalOpen] = useState(false);
 
   const [deletingPostId, setDeletingPostId] = useState<string>("");
 
@@ -116,7 +118,10 @@ const Profile = () => {
             >
               Change Password
             </li>
-            <li className="py-2 px-3 hover:bg-red-800 cursor-pointer ">
+            <li
+              onClick={() => setDeleteProfileModalOpen(true)}
+              className="py-2 px-3 hover:bg-red-800 cursor-pointer "
+            >
               Delete Profile
             </li>
           </ul>
@@ -258,6 +263,13 @@ const Profile = () => {
           refetch={refetchPosts}
           onClose={() => setDeletePostModalOpen(false)}
         />
+      </Modal>
+      {/* DELETE PROFILE MODAL */}
+      <Modal
+        isModalOpen={isDeleteProfileModalOpen}
+        onClose={() => setDeleteProfileModalOpen(false)}
+      >
+        <DeleteProfileForm />
       </Modal>
     </section>
   );

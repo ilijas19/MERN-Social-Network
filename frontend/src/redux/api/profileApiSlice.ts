@@ -21,10 +21,11 @@ export const profileApiSlice = apiSlice.injectEndpoints({
         url: `${PROFILE_URL}/${username}`,
       }),
     }),
-    deleteProfile: builder.mutation<MessageRes, void>({
-      query: () => ({
+    deleteProfile: builder.mutation<MessageRes, { password: string }>({
+      query: ({ password }) => ({
         url: `${PROFILE_URL}`,
         method: "DELETE",
+        body: { password },
       }),
     }),
     updateProfile: builder.mutation<MessageRes, UpdateProfileArgs>({
