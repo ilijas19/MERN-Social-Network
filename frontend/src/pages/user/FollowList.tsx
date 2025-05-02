@@ -8,34 +8,48 @@ import {
 import Loader from "../../components/Loader";
 import { UserInfo } from "../../types";
 import UserList from "../../components/user/UserList";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 const FollowList = () => {
+  const { currentUser } = useSelector((state: RootState) => state.auth);
+
   const { user, list } = useParams();
   const [selectedPage, setSelectedPage] = useState<"following" | "followers">(
     list === "following" || list === "followers" ? list : "following"
   );
   const [showingUsers, setShowingUsers] = useState<UserInfo[] | []>([]);
+  const [isMyProfile, setMyProfile] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
-  const { data: followingList, isLoading: followingLoading } =
-    useGetFollowingListQuery(user ?? "", {
-      skip: selectedPage === "followers",
-    });
+  const {
+    data: followingList,
+    isLoading: followingLoading,
+    refetch: refetchFollowing,
+  } = useGetFollowingListQuery(user ?? "", {
+    skip: selectedPage === "followers",
+  });
 
-  const { data: followersList, isLoading: followersLoading } =
-    useGetFollowerListQuery(user ?? "", {
-      skip: selectedPage === "following",
-    });
+  const {
+    data: followersList,
+    isLoading: followersLoading,
+    refetch: refetchFollowers,
+  } = useGetFollowerListQuery(user ?? "", {
+    skip: selectedPage === "following",
+  });
 
   useEffect(() => {
+    if (currentUser?.username === user) {
+      setMyProfile(true);
+    }
     if (selectedPage === "following" && followingList?.following) {
       setShowingUsers(followingList?.following);
     }
     if (selectedPage === "followers" && followersList?.followers) {
       setShowingUsers(followersList?.followers);
     }
-  }, [selectedPage, followersList, followingList, list]);
+  }, [selectedPage, followersList, followingList, list, currentUser]);
 
   if (followersLoading || followingLoading) {
     return <Loader />;
@@ -82,7 +96,14 @@ const FollowList = () => {
         </div>
       </nav>
       {/* user container */}
-      <UserList showingUsers={showingUsers} />
+      <UserList
+        currentUser={currentUser}
+        showingUsers={showingUsers}
+        myProfile={isMyProfile}
+        selectedPage={selectedPage}
+        refetchFollowers={refetchFollowers}
+        refetchFollowing={refetchFollowing}
+      />
     </section>
   );
 };

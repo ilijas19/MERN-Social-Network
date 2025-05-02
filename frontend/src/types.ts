@@ -103,6 +103,7 @@ export type Profile = {
 
 export type UserProfile = Profile & {
   following: "follow" | "following" | "request sent";
+  wantsToFollowMe: boolean;
 };
 
 export type UpdateProfileArgs = {
@@ -213,4 +214,34 @@ export type SearchForUserRes = {
   nextPage: number | null;
   totalResults: number;
   users: UserInfo[];
+};
+// MESSAGES
+
+// NOTIFICATIONS
+export type Notification = {
+  _id: string;
+  from: Omit<UserInfo, "currentUserFollowing">;
+  to: string;
+  type: "like" | "comment" | "follow" | "message";
+  isRead: boolean;
+  postId?: string;
+  text: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type AllNotiRes = {
+  page: number;
+  nbHits: number;
+  totalNotifications: number;
+  hasNextPage: boolean;
+  notifications: Notification[];
+};
+export type AllNotiArg = {
+  page: number;
+  type?: string;
+};
+
+export type GetSingleNotiRes = {
+  notification: Notification;
 };

@@ -3,6 +3,7 @@ import CustomError from "../errors/error-index.js";
 import Post from "../models/Post.js";
 import User from "../models/User.js";
 import Comment from "../models/Comment.js";
+import { createNotification } from "./notificationController.js";
 
 export const createPost = async (req, res) => {
   const { image, text, type } = req.body;
@@ -282,6 +283,14 @@ export const likeUnlikePost = async (req, res) => {
   } else {
     post.likes.push(req.user.userId);
     await post.save();
+    const currentUser = await User.findOne({ _id: req.user.userId });
+    await createNotification({
+      type: "like",
+      from: currentUser._id,
+      to: post.user,
+      text: `${currentUser.username} has liked your post`,
+      postId,
+    });
     return res.status(StatusCodes.OK).json({ msg: "Liked" });
   }
 };

@@ -3,6 +3,8 @@ import Post from "../models/Post.js";
 import CustomError from "../errors/error-index.js";
 import { StatusCodes } from "http-status-codes";
 import CommentReply from "../models/CommentReply.js";
+import { createNotification } from "./notificationController.js";
+import User from "../models/User.js";
 
 export const createComment = async (req, res) => {
   const { text, postId } = req.body;
@@ -20,6 +22,14 @@ export const createComment = async (req, res) => {
   });
   post.comments.push(comment._id);
   await post.save();
+  const currentUser = await User.findOne({ _id: req.user.userId });
+  await createNotification({
+    type: "comment",
+    from: currentUser._id,
+    to: post.user,
+    text: `${currentUser.username} has commented on your post`,
+    postId,
+  });
   res.status(StatusCodes.CREATED).json({ msg: "Comment Created" });
 };
 

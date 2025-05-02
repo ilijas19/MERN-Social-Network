@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import CustomError from "../errors/error-index.js";
 import { StatusCodes } from "http-status-codes";
 import getCurrentUserFollowingStatus from "../utils/getUserFollowingStatus.js";
+import { createNotification } from "./notificationController.js";
 
 export const followUnfollow = async (req, res) => {
   const { userId } = req.body;
@@ -44,6 +45,12 @@ export const followUnfollow = async (req, res) => {
     } else {
       user.followingRequests.push(req.user.userId);
       await user.save();
+      await createNotification({
+        from: currentUser._id,
+        to: user._id,
+        type: "follow",
+        text: `${currentUser.username} Has Requested To Follow You`,
+      });
       return res.status(StatusCodes.OK).json({ msg: "Request Sent" });
     }
   }
@@ -52,6 +59,12 @@ export const followUnfollow = async (req, res) => {
   currentUser.following.push(user._id);
   await user.save();
   await currentUser.save();
+  await createNotification({
+    from: currentUser._id,
+    to: user._id,
+    type: "follow",
+    text: `${currentUser.username} Started Following You`,
+  });
   return res.status(StatusCodes.OK).json({ msg: "User Followed" });
 };
 

@@ -19,6 +19,7 @@ import userRouter from "./routes/userRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
 import commentRouter from "./routes/commentRoutes.js";
 import uploadRouter from "./routes/uploadRoutes.js";
+import notificationRouter from "./routes/notificationRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -40,6 +41,7 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/comment", commentRouter);
 app.use("/api/v1/upload", uploadRouter);
+app.use("/api/v1/notification", notificationRouter);
 
 app.use(notFound);
 app.use(errorHandler);

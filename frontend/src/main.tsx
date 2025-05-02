@@ -20,6 +20,7 @@ import FollowList from "./pages/user/FollowList.tsx";
 import UserProfile from "./pages/user/UserProfile.tsx";
 import PostPage from "./pages/user/PostPage.tsx";
 import Search from "./pages/layout/Search.tsx";
+import Notifications from "./pages/layout/Notifications.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -35,6 +36,7 @@ const router = createBrowserRouter(
         <Route path="profile/:username" element={<UserProfile />} />
         <Route path="post/:id" element={<PostPage />} />
         <Route path="search" element={<Search />} />
+        <Route path="notifications" element={<Notifications />} />
       </Route>
 
       <Route path="*" element={<div className="text-red-500">Error</div>} />

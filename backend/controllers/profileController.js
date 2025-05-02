@@ -32,6 +32,7 @@ export const getUserProfile = async (req, res) => {
   const currentUser = await User.findById(req.user.userId);
 
   let followingStatus = "follow";
+  let wantsToFollowMe;
 
   if (targetUser.followers.includes(currentUser._id)) {
     followingStatus = "following";
@@ -39,12 +40,19 @@ export const getUserProfile = async (req, res) => {
     followingStatus = "request sent";
   }
 
+  if (currentUser.followingRequests.includes(targetUser._id)) {
+    wantsToFollowMe = true;
+  } else {
+    wantsToFollowMe = false;
+  }
+
   const { followingRequests, followers, following, ...cleanUser } =
-    targetUser._doc;
+    targetUser.toObject();
 
   res.status(StatusCodes.OK).json({
     ...cleanUser,
     following: followingStatus,
+    wantsToFollowMe,
   });
 };
 
