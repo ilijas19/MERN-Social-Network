@@ -95,6 +95,7 @@ const PostPage = () => {
           <ul className="border-t border-gray-700 pb-15">
             {comments?.comments.map((comment) => (
               <CommentEl
+                key={comment._id}
                 refetchComments={refetchComments}
                 currentUser={currentUser}
                 comment={comment}

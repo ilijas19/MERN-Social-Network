@@ -37,7 +37,7 @@ export const notificationApiSlice = apiSlice.injectEndpoints({
         method: "DELETE",
       }),
     }),
-    deleteSingleNotification: builder.mutation<MessageRes, void>({
+    deleteSingleNotification: builder.mutation<MessageRes, string>({
       query: (id) => ({
         url: `${NOTIFICATION_URL}/${id}`,
         method: "DELETE",

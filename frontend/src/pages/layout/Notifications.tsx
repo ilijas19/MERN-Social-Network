@@ -5,16 +5,19 @@ import { useGetAllNotificationsQuery } from "../../redux/api/notificationsApiSli
 import Loader from "../../components/Loader";
 import { isApiError } from "../../utils/isApiError";
 import Notification from "../../components/user/Notification";
+import { Notification as NotificationType } from "../../types";
 
 const Notifications = () => {
   const [activeTab, setActiveTab] = useState<"all" | "post" | "requests">(
     "all"
   );
-
   const [searchQuery, setSearchQuery] = useState<
     "" | "like" | "comment" | "follow"
   >("");
   const [page, setPage] = useState(1);
+  const [showingNotifications, setShowingNotifications] = useState<
+    NotificationType[] | []
+  >([]);
 
   const navigate = useNavigate();
 
@@ -22,14 +25,28 @@ const Notifications = () => {
     data: notifications,
     isLoading: notificationsLoading,
     error: notificationsError,
-    // refetch: refetchNotifications,
+    refetch: refetchNotifications,
   } = useGetAllNotificationsQuery({ page, type: searchQuery });
 
   useEffect(() => {
     if (activeTab === "all") setSearchQuery("");
     if (activeTab === "requests") setSearchQuery("follow");
     if (activeTab === "post") setSearchQuery("like");
+    setPage(1);
+    setShowingNotifications([]);
   }, [activeTab]);
+
+  useEffect(() => {
+    if (!notifications) return;
+    if (page === 1) {
+      setShowingNotifications(notifications!.notifications);
+    } else {
+      setShowingNotifications((prev) => [
+        ...prev,
+        ...notifications!.notifications,
+      ]);
+    }
+  }, [notifications, page]);
 
   if (notificationsLoading) {
     return <Loader />;
@@ -109,10 +126,20 @@ const Notifications = () => {
       )}
       {/* NOTIFICATION CONTAINER */}
       <ul className="flex flex-col">
-        {notifications?.notifications.map((notification) => (
-          <Notification notification={notification} />
-        ))}
+        {showingNotifications &&
+          showingNotifications.map((notification) => (
+            <Notification
+              key={notification._id}
+              notification={notification}
+              refetch={refetchNotifications}
+            />
+          ))}
       </ul>
+      {notifications?.hasNextPage && (
+        <div className="flex justify-center mt-3">
+          <button onClick={() => setPage(page + 1)}>Show More</button>
+        </div>
+      )}
     </section>
   );
 };
