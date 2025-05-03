@@ -6,6 +6,8 @@ import Loader from "../../components/Loader";
 import { isApiError } from "../../utils/isApiError";
 import Notification from "../../components/user/Notification";
 import { Notification as NotificationType } from "../../types";
+import Modal from "../../components/Modal";
+import DeleteAllNotificationsForm from "../../components/forms/DeleteAllNotificationsForm";
 
 const Notifications = () => {
   const [activeTab, setActiveTab] = useState<"all" | "post" | "requests">(
@@ -18,6 +20,7 @@ const Notifications = () => {
   const [showingNotifications, setShowingNotifications] = useState<
     NotificationType[] | []
   >([]);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -63,13 +66,21 @@ const Notifications = () => {
   return (
     <section>
       {/* go back */}
-      <header className="border-b border-gray-700 py-3 px-3 flex items-center gap-3">
+      <header className="border-b border-gray-700 py-3.5 px-3 flex items-center gap-3">
         <IoArrowBack
           size={20}
           className="cursor-pointer"
           onClick={() => navigate(-1)}
         />
         <h2 className="font-semibold text-lg">Notifications</h2>
+        {showingNotifications.length === 0 || (
+          <button
+            onClick={() => setDeleteModalOpen(true)}
+            className="ml-auto bg-red-600 hover:bg-red-700 cursor-pointer transition-colors px-2 py-0.5 rounded-2xl font-medium"
+          >
+            Delete All
+          </button>
+        )}
       </header>
 
       <nav className="flex justify-around border-b border-gray-700">
@@ -126,6 +137,11 @@ const Notifications = () => {
       )}
       {/* NOTIFICATION CONTAINER */}
       <ul className="flex flex-col">
+        {showingNotifications.length === 0 && (
+          <h2 className="text-center mt-4 text-gray-300">
+            No Notifications To Show
+          </h2>
+        )}
         {showingNotifications &&
           showingNotifications.map((notification) => (
             <Notification
@@ -140,6 +156,16 @@ const Notifications = () => {
           <button onClick={() => setPage(page + 1)}>Show More</button>
         </div>
       )}
+
+      <Modal
+        isModalOpen={isDeleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+      >
+        <DeleteAllNotificationsForm
+          onClose={() => setDeleteModalOpen(false)}
+          refetch={refetchNotifications}
+        />
+      </Modal>
     </section>
   );
 };

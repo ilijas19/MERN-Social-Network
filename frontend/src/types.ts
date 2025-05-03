@@ -151,7 +151,7 @@ export type FolUnfArgs = {
 };
 
 export type GetFollowRequestsRes = {
-  followingRequests: Omit<UserInfo, "currentUserFollowing">;
+  followingRequests: Omit<UserInfo, "currentUserFollowing">[];
 };
 // COMMENTS
 export type Reply = {

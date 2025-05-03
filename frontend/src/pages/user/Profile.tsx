@@ -14,7 +14,7 @@ import { useLogoutMutation } from "../../redux/api/authApiSlice";
 import { isApiError } from "../../utils/isApiError";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../redux/features/auth/authSlice";
 import { apiSlice } from "../../redux/api/apiSlice";
 import { BsThreeDots } from "react-icons/bs";
@@ -102,7 +102,13 @@ const Profile = () => {
           className="ml-auto cursor-pointer"
         />
         {isProfileMenuOpen && (
-          <ul className="rounded-lg overflow-hidden  bg-gray-800 border border-gray-600 absolute right-4 top-10 ">
+          <ul className="rounded-lg overflow-hidden  bg-gray-800 border border-gray-600 absolute right-4 top-10 flex flex-col">
+            <Link
+              to={"/followingRequests"}
+              className="py-2 px-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700"
+            >
+              Following Requests
+            </Link>
             <li className="py-2 px-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700">
               Verify Profile
             </li>

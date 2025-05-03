@@ -55,7 +55,7 @@ const Notification = ({ notification, refetch }: NotificationProps) => {
             : notification.from.profilePicture
         }
         alt=""
-        className="h-12 w-12 rounded-full"
+        className="h-12 w-12 rounded-full object-cover"
       />
       {/* text-div */}
       <div className="flex flex-col">
