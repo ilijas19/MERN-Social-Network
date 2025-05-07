@@ -1,13 +1,11 @@
-import {
-  HomeIcon,
-  MagnifyingGlassIcon,
-  UserIcon,
-  BellIcon,
-  EnvelopeIcon,
-  BookmarkIcon,
-} from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "react-router-dom";
 import { CurrentUser } from "../../types";
+import { FaHome } from "react-icons/fa";
+import { FaMagnifyingGlass } from "react-icons/fa6";
+import { IoIosNotificationsOutline } from "react-icons/io";
+import { MdOutlineMessage } from "react-icons/md";
+import { FaRegBookmark } from "react-icons/fa";
+import { FaRegUser } from "react-icons/fa";
 
 type NavProps = {
   currentUser: CurrentUser | null;
@@ -15,12 +13,16 @@ type NavProps = {
 
 const Navigation = ({ currentUser }: NavProps) => {
   const navItems = [
-    { icon: HomeIcon, label: "Home", path: "/" },
-    { icon: MagnifyingGlassIcon, label: "Search", path: "/search" },
-    { icon: BellIcon, label: "Notifications", path: "/notifications" },
-    { icon: EnvelopeIcon, label: "Messages", path: "/messages" },
-    { icon: BookmarkIcon, label: "Bookmarks", path: "/bookmarks" },
-    { icon: UserIcon, label: "Profile", path: "/myProfile" },
+    { icon: FaHome, label: "Home", path: "/" },
+    { icon: FaMagnifyingGlass, label: "Search", path: "/search" },
+    {
+      icon: IoIosNotificationsOutline,
+      label: "Notifications",
+      path: "/notifications",
+    },
+    { icon: MdOutlineMessage, label: "Messages", path: "/messages" },
+    { icon: FaRegBookmark, label: "Bookmarks", path: "/bookmarks" },
+    { icon: FaRegUser, label: "Profile", path: "/myProfile" },
   ];
 
   const navigate = useNavigate();
@@ -34,7 +36,7 @@ const Navigation = ({ currentUser }: NavProps) => {
               to={item.path}
               className="sm:p-3 sm:flex sm:items-center sm:gap-2"
             >
-              <item.icon className="sm:h-7 sm:w-7 h-6 w-6 text-gray-300 group-hover:text-emerald-500" />
+              <item.icon className=" h-6 w-6 text-gray-300 group-hover:text-emerald-500" />
               <p className="text-gray-300 font-semibold sm:inline hidden group-hover:text-emerald-500">
                 {item.label}
               </p>
