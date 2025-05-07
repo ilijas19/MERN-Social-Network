@@ -22,6 +22,8 @@ import PostPage from "./pages/user/PostPage.tsx";
 import Search from "./pages/layout/Search.tsx";
 import Notifications from "./pages/layout/Notifications.tsx";
 import FollowingRequests from "./pages/user/FollowingRequests.tsx";
+import Messages from "./pages/messages/Messages.tsx";
+import ChatPage from "./pages/messages/ChatPage.tsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -39,6 +41,8 @@ const router = createBrowserRouter(
         <Route path="search" element={<Search />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="followingRequests" element={<FollowingRequests />} />
+        <Route path="messages" element={<Messages />} />
+        <Route path="messages/chat/:id" element={<ChatPage />} />
       </Route>
 
       <Route path="*" element={<div className="text-red-500">Error</div>} />

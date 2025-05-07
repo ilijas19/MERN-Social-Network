@@ -19,7 +19,6 @@ const FollowingRequests = () => {
     error,
     refetch: refetchRequests,
   } = useGetFollowRequestsQuery();
-  console.log(followingRequests);
 
   const [acceptApiHandler, { isLoading: acceptLoading }] =
     useAcceptFollowRequestMutation();

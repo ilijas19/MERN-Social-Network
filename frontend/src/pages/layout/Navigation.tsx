@@ -6,7 +6,7 @@ import {
   EnvelopeIcon,
   BookmarkIcon,
 } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CurrentUser } from "../../types";
 
 type NavProps = {
@@ -22,6 +22,8 @@ const Navigation = ({ currentUser }: NavProps) => {
     { icon: BookmarkIcon, label: "Bookmarks", path: "/bookmarks" },
     { icon: UserIcon, label: "Profile", path: "/myProfile" },
   ];
+
+  const navigate = useNavigate();
 
   return (
     <aside className="fixed border-r border-gray-700 bottom-0 sm:top-0 sm:right-auto right-0 sm:left-auto left-0 sm:w-56 w-full sm:bg-gray-800 bg-gray-700 sm:px-2 flex flex-col">
@@ -40,9 +42,11 @@ const Navigation = ({ currentUser }: NavProps) => {
           </li>
         ))}
       </ul>
-      <div className="mt-auto not-sm:hidden mb-4 ml-5 flex gap-2 items-center">
-        <div className="h-8 w-8 bg-white rounded-full"></div>
-        <p className="text-white">{currentUser?.username}</p>
+      <div
+        className="mt-auto not-sm:hidden mb-4 ml-5 flex gap-2 items-center hover:bg-gray-700 rounded p-2 py-1 cursor-pointer"
+        onClick={() => navigate("myProfile")}
+      >
+        <p className="text-white ">{currentUser?.username}</p>
       </div>
     </aside>
   );

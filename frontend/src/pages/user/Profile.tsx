@@ -109,9 +109,7 @@ const Profile = () => {
             >
               Following Requests
             </Link>
-            <li className="py-2 px-3 hover:bg-gray-700 cursor-pointer border-b border-gray-700">
-              Verify Profile
-            </li>
+
             <li
               onClick={() => setPrivacyModalOpen(true)}
               className="py-2 px-3 hover:bg-gray-700 cursor-pointer  border-b border-gray-700"

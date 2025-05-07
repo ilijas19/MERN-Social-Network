@@ -8,3 +8,5 @@ export const UPLOAD_URL = "/api/v1/upload";
 export const USERS_URL = "/api/v1/user";
 export const COMMENT_URL = "/api/v1/comment";
 export const NOTIFICATION_URL = "/api/v1/notification";
+export const CHAT_URL = "/api/v1/chat";
+export const ORIGIN_URL = "http://localhost:5000";

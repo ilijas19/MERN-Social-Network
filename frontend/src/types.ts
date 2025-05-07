@@ -245,3 +245,66 @@ export type AllNotiArg = {
 export type GetSingleNotiRes = {
   notification: Notification;
 };
+//MESSAGES
+export type Message = {
+  _id: string;
+  chat: string;
+  sender: {
+    _id: string;
+    username: string;
+    profilePicture: string;
+  };
+  text: string;
+  read: boolean;
+  createdAt: Date | String;
+};
+
+export type Chat = {
+  chatId: string;
+  otherUser: {
+    _id: string;
+    username: string;
+    profilePicture: string;
+  };
+  lastMessage: Message;
+};
+
+export type CreateChatRes = {
+  msg: string;
+  chatId: string;
+  otherUser: {
+    _id: string;
+    username: string;
+    profilePicture: string;
+  };
+};
+
+export type AllChatsRes = {
+  chats: Chat[];
+};
+
+export type ChatMessagesRes = {
+  page: number;
+  hasNextPage: boolean;
+  messages: Message[];
+  otherUser: {
+    _id: string;
+    username: string;
+    profilePicture: string;
+  };
+};
+
+export type ChatMessagesArg = {
+  chatId: string;
+  page: number;
+};
+
+export type SendMessagesRes = {
+  msg: string;
+  message: Message;
+};
+
+export type SendMessageArg = {
+  chatId: string;
+  text: string;
+};
