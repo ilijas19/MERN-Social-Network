@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import {
   useGetCurrentUserQuery,
@@ -10,7 +9,7 @@ import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setCurrentUser } from "../../redux/features/auth/authSlice";
 import Loader from "../../components/Loader";
-
+import { FaLock, FaEnvelope } from "react-icons/fa";
 const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -80,7 +79,7 @@ const Login = () => {
 
       <label>Email</label>
       <div className="flex items-center border border-gray-600 rounded focus-within:ring-1 focus-within:ring-emerald-500 mb-2">
-        <EnvelopeIcon className="h-5 w-5 mx-2 text-emerald-600" />
+        <FaEnvelope className="h-5 w-5 mx-2 text-emerald-600" />
         <input
           type="email"
           className="py-1.5 px-2 bg-transparent flex-1 focus:outline-none"
@@ -92,7 +91,7 @@ const Login = () => {
 
       <label>Password</label>
       <div className="flex items-center border border-gray-600 rounded focus-within:ring-1 focus-within:ring-emerald-500 mb-2">
-        <LockClosedIcon className="h-5 w-5 mx-2 text-emerald-600" />
+        <FaLock className="h-5 w-5 mx-2 text-emerald-600" />
         <input
           type="password"
           className="py-1.5 px-2 bg-transparent flex-1 focus:outline-none"

@@ -1,11 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
 import {
-  EnvelopeIcon,
-  UserIcon,
-  LockClosedIcon,
-  LockOpenIcon,
-} from "@heroicons/react/24/outline";
-import {
   useGetCurrentUserQuery,
   useRegisterMutation,
 } from "../../redux/api/authApiSlice";
@@ -13,6 +7,8 @@ import { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import { isApiError } from "../../utils/isApiError";
 import { toast } from "react-toastify";
+import { FaUser, FaLock, FaLockOpen } from "react-icons/fa";
+import { FaEnvelope } from "react-icons/fa";
 
 const Register = () => {
   const [formProps, setFormProps] = useState({
@@ -67,7 +63,7 @@ const Register = () => {
       {/* Email Field with Icon */}
       <label>Email</label>
       <div className="flex items-center border border-gray-600 rounded focus-within:ring-1 focus-within:ring-emerald-500 mb-2">
-        <EnvelopeIcon className="h-5 w-5 mx-2 text-emerald-600" />
+        <FaEnvelope className="h-5 w-5 mx-2 text-emerald-600" />
         <input
           value={formProps.email}
           onChange={(e) =>
@@ -82,7 +78,7 @@ const Register = () => {
       {/* Username Field with Icon */}
       <label>Username</label>
       <div className="flex items-center border border-gray-600 rounded focus-within:ring-1 focus-within:ring-emerald-500 mb-2">
-        <UserIcon className="h-5 w-5 mx-2 text-emerald-600" />
+        <FaUser className="h-5 w-5 mx-2 text-emerald-600" />
         <input
           value={formProps.username}
           onChange={(e) =>
@@ -97,7 +93,7 @@ const Register = () => {
       {/* Password Field with Icon */}
       <label>Password</label>
       <div className="flex items-center border border-gray-600 rounded focus-within:ring-1 focus-within:ring-emerald-500 mb-2">
-        <LockClosedIcon className="h-5 w-5 mx-2 text-emerald-600" />
+        <FaLock className="h-5 w-5 mx-2 text-emerald-600" />
         <input
           value={formProps.password}
           onChange={(e) =>
@@ -112,7 +108,7 @@ const Register = () => {
       {/* Confirm Password Field with Icon */}
       <label>Confirm Password</label>
       <div className="flex items-center border border-gray-600 rounded focus-within:ring-1 focus-within:ring-emerald-500 mb-2">
-        <LockOpenIcon className="h-5 w-5 mx-2 text-emerald-600" />
+        <FaLockOpen className="h-5 w-5 mx-2 text-emerald-600" />
         <input
           value={formProps.confirmPassword}
           onChange={(e) =>
